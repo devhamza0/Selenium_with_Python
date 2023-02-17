@@ -1,33 +1,60 @@
+# Automating Amazon
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+browser = webdriver.Chrome()
+browser.get("https://www.amazon.com/s?i=specialty-aps&bbn=16225007011&rh=n%3A16225007011%2Cn%3A172456&ref=nav_em__nav_desktop_sa_intl_computer_accessories_and_peripherals_0_2_6_2")
 
-def testComponent():
-    driver = webdriver.Chrome()
+elem_list = browser.find_element(
+    by=By.CSS_SELECTOR, value="div.s-main-slot.s-result-list.s-search-results.sg-row")
 
-    driver.get("https://www.selenium.dev/selenium/web/web-form.html")
+items = elem_list.find_elements(
+    by=By.XPATH, value='//div[@data-component-type="s-search-result"]')
 
-    title = driver.title
-    assert title == "Web form"
+print(len(items))
 
-    driver.implicitly_wait(0.5)
+for item in items:
+    title = item.find_element(by=By.TAG_NAME, value="h2").text
+    price = "No Price Found"
+    img = "Image not Found"
+    link = item.find_element(
+        by=By.CLASS_NAME, value="a-link-normal").get_attribute('href')
 
-    text_box = driver.find_element(by=By.NAME, value="my-text")
-    submit_button = driver.find_element(by=By.CSS_SELECTOR, value="button")
+    try:
+        price = item.find_element(
+            by=By.CLASS_NAME, value="a-price").text.replace("\n", ".")
+    except:
+        pass
 
-    text_box.send_keys("Selenium")
-    submit_button.click()
+    try:
+        img = item.find_element(
+            by=By.CSS_SELECTOR, value=".s-image").get_attribute("src")
+    except:
+        pass
 
-    message = driver.find_element(by=By.ID, value="message")
-    value = message.text
-    assert value == "Received!"
+    print("Title: " + title)
+    print("Price:" + price)
+    print("Image:" + img)
+    print("Link:" + link + "\n")
 
-    driver.quit()
+# def testAmazon():
+#     browser = webdriver.Chrome()
+#     browser.get("https://www.amazon.com/s?i=specialty-aps&bbn=16225007011&rh=n%3A16225007011%2Cn%3A172456&ref=nav_em__nav_desktop_sa_intl_computer_accessories_and_peripherals_0_2_6_2")
+
+#     elem_list = browser.find_element(
+#         by=By.CSS_SELECTOR, value="div.s-main-slot.s-result-list.s-search-results.sg-row")
+
+#     items = elem_list.find_element(
+#         by=By.XPATH, value='//div[@data-component-type="s-search-result"]')
+
+#     for item in items:
+#         title = item.find_element(by=By.TAG_NAME, value="h2").text
+#         print("Title: " + title)
 
 
-def main():
-    testComponent()
+# def main():
+#     testAmazon()
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
